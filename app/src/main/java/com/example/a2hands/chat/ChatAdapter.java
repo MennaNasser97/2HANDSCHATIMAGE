@@ -4,7 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +38,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.List;
+
+import io.grpc.internal.SharedResourceHolder;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyHolder>{
 
@@ -71,9 +78,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyHolder>{
 
         final String message = chatList.get(position).getMessage();
         String timestamp = chatList.get(position).getTimestamp();
-        String messageImage = chatList.get(position).getMessageImage();
+        final String messageImagee = chatList.get(position).getMessageImage();
 
-        if(messageImage.equals("")){
+        if(messageImagee.equals("") || message.equals("This message was Deleted...")){
             holder.messageImage.setVisibility(View.GONE);
             holder.message.setVisibility(View.VISIBLE);
             holder.message.setPaddingRelative(12, 8, 8, 0);
@@ -83,14 +90,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyHolder>{
         } else if(message.equals("")){
             holder.message.setVisibility(View.GONE);
             holder.messageImage.setVisibility(View.VISIBLE);
-            loadPhotos(holder.messageImage,"Chat_Pics/"+messageImage);
+            loadPhotos(holder.messageImage,"Chat_Pics/"+messageImagee);
         } else {
             holder.message.setVisibility(View.VISIBLE);
             holder.messageImage.setVisibility(View.VISIBLE);
             holder.message.getLayoutParams().width = Constraints.LayoutParams.MATCH_CONSTRAINT;
             holder.message.setPaddingRelative(8, 8, 8, 0);
             holder.message.setText(message);
-            loadPhotos(holder.messageImage,"Chat_Pics/"+messageImage);
+            loadPhotos(holder.messageImage,"Chat_Pics/"+messageImagee);
 
         }
         holder.Time.setText(timestamp);
@@ -101,9 +108,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyHolder>{
 
         }
         // click to show delete dialog
-        holder.messageLayout.setOnClickListener(new View.OnClickListener() {
+        holder.messageLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onLongClick(View v) {
                 AlertDialog.Builder builder= new AlertDialog.Builder(context);
                 builder.setTitle("Delete");
                 builder.setMessage("Are you sure to delete this message?");
@@ -122,8 +129,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyHolder>{
                     }
                 });
                 builder.create().show();
+                return false;
             }
         });
+//
         if(position==chatList.size()-1){
             if (chatList.get(position).getIsSeen()){
                 holder.isSeen.setText("seen");
@@ -133,6 +142,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyHolder>{
         }else {
             holder.isSeen.setVisibility(View.GONE);
         }
+
+        holder.messageImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MessageImageActivity.class);
+                intent.putExtra("MSGDI",chatList.get(position).getMSGID());
+                context.startActivity(intent);
+            }
+        });
     }
 
     private void deleteMassage(int position) {
@@ -192,6 +210,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyHolder>{
             return MSG_TYPE_LEFT;
         }
     }
+
 
     class MyHolder extends RecyclerView.ViewHolder{
 

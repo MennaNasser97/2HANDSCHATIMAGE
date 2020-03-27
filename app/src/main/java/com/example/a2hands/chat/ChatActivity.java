@@ -45,6 +45,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -102,10 +103,10 @@ public class ChatActivity extends AppCompatActivity {
     Uri image_uri =null;
     String currentPhotoPath;
     Bitmap bitmap;
-    Calendar cal =Calendar.getInstance(Locale.ENGLISH);
-    SimpleDateFormat simpleDateFormat=new SimpleDateFormat("hh:mm a");
-    String dateTime =simpleDateFormat.format(cal.getTime());
-    String MSG_ID =String.valueOf(System.currentTimeMillis());
+
+
+    LinearLayoutManager linearLayoutManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +116,7 @@ public class ChatActivity extends AppCompatActivity {
 
         recyclerView=findViewById(R.id.chatrecycleview);
         profileimage=findViewById(R.id.profile_Image);
+
         /////UPLOAD_IMAGE
         messageImage=findViewById(R.id.messageImage);
         uploadImage=findViewById(R.id.uploadimage);
@@ -135,7 +137,7 @@ public class ChatActivity extends AppCompatActivity {
         usersdbref =firebaseDatabase.getReference("users");
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
+        linearLayoutManager=new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -229,6 +231,8 @@ public class ChatActivity extends AppCompatActivity {
                     adapterChat.notifyDataSetChanged();
                     //set adapter to recyclerview
                     recyclerView.setAdapter(adapterChat);
+                    recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount());
+
                 }
             }
 
@@ -240,6 +244,10 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage(final String messagebody) {
+        Calendar cal =Calendar.getInstance(Locale.ENGLISH);
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("hh:mm a");
+        String dateTime =simpleDateFormat.format(cal.getTime());
+        String MSG_ID =String.valueOf(System.currentTimeMillis());
         DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference();
         HashMap<String,Object> MSG = new HashMap<>();
         MSG.put("MSGID",MSG_ID);
@@ -442,6 +450,10 @@ public class ChatActivity extends AppCompatActivity {
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             //image upload
                             progressDialog.dismiss();
+                            Calendar cal =Calendar.getInstance(Locale.ENGLISH);
+                            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("hh:mm a");
+                            String dateTime =simpleDateFormat.format(cal.getTime());
+                            String MSG_ID =String.valueOf(System.currentTimeMillis());
                             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                             //setup required data
                             if (TextUtils.isEmpty(messagebody)) {
@@ -623,5 +635,13 @@ public class ChatActivity extends AppCompatActivity {
             finish();
         }
     }
+    //RecyclerView
+    private void attachRecyclerViewAdapter() {
+
+        // Scroll to bottom on new messages
+
+    }
+
+
 
 }

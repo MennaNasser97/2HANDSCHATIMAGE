@@ -125,17 +125,17 @@
 
         <ImageButton
             android:id="@+id/uploadimage"
-            android:background="@null"
-            android:src="@drawable/ic_attach_file_black_24dp"
             android:layout_width="40dp"
-            android:layout_height="40dp"/>
+            android:layout_height="40dp"
+            android:background="@null"
+            android:src="@drawable/ic_attach_file_black_24dp" />
 
         <ImageButton
             android:id="@+id/sendbutton"
-            android:background="@null"
-            android:src="@drawable/ic_send_black_24dp"
             android:layout_width="40dp"
-            android:layout_height="40dp"/>
+            android:layout_height="40dp"
+            android:background="@null"
+            android:src="@drawable/ic_send_black_24dp" />
 
     </LinearLayout>
 
