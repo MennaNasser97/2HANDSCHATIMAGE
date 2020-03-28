@@ -129,7 +129,10 @@ public class ChatListFragment extends Fragment {
     }
 
     private void lastMessage(final String userId) {
-        DatabaseReference reference=FirebaseDatabase.getInstance().getReference("Chats");
+        DatabaseReference chatRef1 = FirebaseDatabase.getInstance().getReference("Chatlist")
+                .child(currentUser.toString())
+                .child(userId)
+                .child("Message");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
